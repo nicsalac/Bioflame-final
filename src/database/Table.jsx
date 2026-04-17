@@ -10,7 +10,6 @@ const SlurryManagementTable = () => {
     const [loading,      setLoading]      = useState(true);
     const [error,        setError]        = useState(null);
 
-    // Add-batch state — only used by Admins
     const [newWeight, setNewWeight] = useState('');
     const [isAdding,  setIsAdding]  = useState(false);
 
@@ -21,17 +20,16 @@ const SlurryManagementTable = () => {
 
         const { data: fetchedData, error } = await supabase
             .from('slurrylog')
-            .select('log_id, timestamp, weight')
-            .eq('transact_type', 'IN')
-            .order('timestamp', { ascending: false });
+            .select('log_id, created_at, weight')
+            .order('created_at', { ascending: false });
 
         if (error) {
             console.error("Error fetching data:", error);
             setError("Failed to load table data.");
         } else {
             const formattedData = fetchedData.map(item => ({
-                batchID:     item.log_id,
-                inputDate:   new Date(item.timestamp).toLocaleString(),
+                batchID:      item.log_id,
+                inputDate:    new Date(item.created_at).toLocaleString(),
                 weightVolume: item.weight,
             }));
             setTableData(formattedData);
@@ -74,16 +72,12 @@ const SlurryManagementTable = () => {
 
         setIsAdding(true);
 
-        const inputTimestamp = new Date();
-
         const { error: logError } = await supabase
             .from('slurrylog')
             .insert([{
-                transact_type:   'IN',
-                weight:          parseFloat(newWeight),
-                timestamp:       inputTimestamp.toISOString(),
-                digester_id:     'D-01',
-                current_storage: parseFloat(newWeight),
+                digester_id: 'D-01',
+                created_at:  new Date().toISOString(),
+                weight:      parseFloat(newWeight),
             }]);
 
         if (logError) {
@@ -91,7 +85,9 @@ const SlurryManagementTable = () => {
             alert("Failed to add new batch to logs.");
             setIsAdding(false);
         } else {
-            window.location.reload();
+            setNewWeight('');
+            setIsAdding(false);
+            fetchSlurryData();
         }
     };
 
@@ -109,7 +105,7 @@ const SlurryManagementTable = () => {
             console.error("Error deleting batch:", error);
             alert("Failed to delete batch.");
         } else {
-            window.location.reload();
+            fetchSlurryData();
         }
     };
 
@@ -121,7 +117,6 @@ const SlurryManagementTable = () => {
                     <h2 style={{ fontSize: 24, fontWeight: 'bold', margin: '0 0 4px', color: 'white' }}>
                         Slurry Management Table
                     </h2>
-                    {/* Role badge */}
                     <span style={{
                         display: 'inline-block',
                         background: isAdmin ? 'rgba(108,142,62,0.3)' : 'rgba(200,160,60,0.25)',
@@ -147,7 +142,6 @@ const SlurryManagementTable = () => {
                 </select>
             </div>
 
-            {/* --- ADD NEW BATCH FORM — Admin only --- */}
             {isAdmin ? (
                 <div style={{
                     backgroundColor: '#F0F0F0', padding: 15, borderRadius: 8,
@@ -177,7 +171,6 @@ const SlurryManagementTable = () => {
                     </button>
                 </div>
             ) : (
-                /* Non-admin notice */
                 <div style={{
                     backgroundColor: 'rgba(229,193,106,0.12)',
                     border: '1px solid rgba(229,193,106,0.35)',
@@ -192,7 +185,6 @@ const SlurryManagementTable = () => {
                 </div>
             )}
 
-            {/* --- TABLE --- */}
             {loading && <div style={{ color: "#6C8E3E", textAlign: 'center', padding: 20, backgroundColor: 'white' }}>Loading table data...</div>}
             {error   && <div style={{ color: "red",     textAlign: 'center', padding: 20, backgroundColor: 'white' }}>{error}</div>}
 
