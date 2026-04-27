@@ -1,0 +1,88 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  /* Prevent horizontal overflow on ALL screens */
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: #F8F4E3;
+  color: #2a1f0e;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  /* Ensure body never exceeds viewport */
+  max-width: 100vw;
+}
+
+#root {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  /* Prevent inputs from exceeding container on iOS */
+  max-width: 100%;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* ── Responsive utility classes ────────────────────────── */
+
+/* 1-column grid on small screens */
+@media (max-width: 480px) {
+  .sensor-grid-row1,
+  .sensor-grid-row2 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 2-column grid on medium screens */
+@media (min-width: 481px) and (max-width: 768px) {
+  .sensor-grid-row1,
+  .sensor-grid-row2 {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Dashboard controls stack on mobile */
+@media (max-width: 600px) {
+  .dashboard-controls {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .filter-group {
+    width: 100% !important;
+    flex-wrap: wrap !important;
+  }
+  .date-input {
+    width: 100% !important;
+  }
+}
+
+/* Table horizontal scroll on small screens */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: #0d1a09; }
+::-webkit-scrollbar-thumb  { background: #6C8E3E55; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #6C8E3E99; }
