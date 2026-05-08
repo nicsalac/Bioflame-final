@@ -31,8 +31,16 @@ const calculateTimeRange = (filterPeriod) => {
 
 const formatTimeLabel = (timestamp) => {
   if (!timestamp) return "";
-  const date = new Date(timestamp);
-  return date.toLocaleTimeString([], {
+  
+  // Force JavaScript to treat the Supabase string as UTC if it isn't already
+  const safeTimestamp = timestamp.endsWith('Z') || timestamp.includes('+') 
+    ? timestamp 
+    : `${timestamp}Z`;
+
+  const date = new Date(safeTimestamp);
+  
+  // Note: Using toLocaleString is safer across all browsers than toLocaleTimeString when including months/days
+  return date.toLocaleString([], {
     month: "2-digit", day: "2-digit",
     hour: "2-digit", minute: "2-digit",
   });

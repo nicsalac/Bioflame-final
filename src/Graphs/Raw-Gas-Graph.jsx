@@ -28,13 +28,25 @@ const calculateTimeRange = (filterPeriod) => {
   }
   return startTime.toISOString();
 };
-
 const formatTimeLabel = (timestamp) => {
   if (!timestamp) return "";
-  const date = new Date(timestamp);
-  return date.toLocaleTimeString([], {
-    month: "2-digit", day: "2-digit",
-    hour: "2-digit", minute: "2-digit",
+  
+  // 1. Ensure the timestamp is parsed correctly
+  const safeTimestamp = timestamp.endsWith('Z') || timestamp.includes('+') 
+    ? timestamp 
+    : `${timestamp}Z`;
+
+  const date = new Date(safeTimestamp);
+  
+  // 2. Force the output to Philippine Time (Asia/Manila) AND include seconds
+  return date.toLocaleString('en-US', {
+    timeZone: 'Asia/Manila',
+    month: "2-digit", 
+    day: "2-digit",
+    hour: "2-digit", 
+    minute: "2-digit",
+    second: "2-digit", // Added seconds so points don't share the exact same label
+    hour12: true
   });
 };
 
